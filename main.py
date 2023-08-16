@@ -29,36 +29,37 @@ while True:
     # print(response.json()['md5'])
 
     if response.json()['md5'] != lastmd5:
-        print(str(datetime.datetime.now()) + "检测到地震")
-        lastmd5 = response.json()['md5']
-        if response.json()['No0']['type'] == "reviewed":
-            etype = "正式测定"
-        else:
-            etype = "自动测定"
-        msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震(" + etype + ")"
-        robot.send_text(msg = msg)
-
         #计算与震源距离（单位km）
         tlength = length(float(response.json()['No0']['latitude']), float(response.json()['No0']['longitude']))
-
-        #计算本地震度 （公式参考：https://github.com/Project-BS-CN/CEIV-1.0.0/blob/main/js/index.js）
-        localmagnitude = 0.92 + 1.63 * float(response.json()['No0']['magnitude']) - 3.49 * math.log10(tlength)
-        if localmagnitude <= 0:
-            localmagnitude = 0.0
-        elif localmagnitude < 12:
-            localmagnitude = int(localmagnitude * 10) / 10.0    #保留1位小数
-        robot.send_text(msg = "距离震中" + str(int(tlength)) + "km" + ", 估计本地" + str(localmagnitude) + "级")
 
         #修正时间，按横波（取4km/s）抵达时间计算
         timeArray = time.strptime(response.json()['No0']['time'], "%Y-%m-%d %H:%M:%S")
         timeStamp = time.mktime(timeArray)
         arrivetime = tlength / 4 - int(time.time() - timeStamp)
 
+        if arrivetime >= -120: #若S波已抵达超过120s则不再反馈
+            print(str(datetime.datetime.now()) + "检测到地震")
+            lastmd5 = response.json()['md5']
+            if response.json()['No0']['type'] == "reviewed":
+                etype = "正式测定"
+            else:
+                etype = "自动测定"
+            msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震(" + etype + ")"
+            robot.send_text(msg = msg)
 
-        if arrivetime > 0:
-            robot.send_text(msg = "预计抵达时间(S波)" + str(int(arrivetime)) + "s")
-        else:
-            robot.send_text(msg = "已抵达(S波)")
+            #计算本地震度
+            localmagnitude = 0.92 + 1.63 * float(response.json()['No0']['magnitude']) - 3.49 * math.log10(tlength)
+            if localmagnitude <= 0:
+                localmagnitude = 0.0
+            elif localmagnitude < 12:
+                localmagnitude = int(localmagnitude * 10) / 10.0    #保留1位小数
+            robot.send_text(msg = "距离震中" + str(int(tlength)) + "km" + ", 估计本地" + str(localmagnitude) + "级")
+
+            if arrivetime > 0:
+                arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
+                robot.send_text(msg = "预计抵达时间(S波)" + str(int(arrivetime)) + "s")
+            else:
+                robot.send_text(msg = "已抵达(S波)")
 
     
     time.sleep(1)
