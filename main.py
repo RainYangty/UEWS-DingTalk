@@ -8,7 +8,7 @@ from geopy.distance import geodesic
 webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
 secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
 robot = DingtalkChatbot(webhook, secret=secret)
-location = [29.825287, 106.437485]  #你的坐标 [经度, 纬度] 默认为 重庆北碚
+location = [106.437485, 29.825287]  #你的坐标 [纬度, 经度] 默认为 重庆北碚
 
 lastmd5 = 0
 robot.send_text(msg="地震预警已启动")
