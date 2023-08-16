@@ -28,7 +28,7 @@ while True:
     errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
     # print("get json")
     try:
-        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 10)  #设置等待时间，若无响应则网络出现问题
+        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题
     except:
         if err == False:
             print(str(errtime) + "网络错误")
@@ -52,14 +52,12 @@ while True:
         arrivetime = tlength / 4 - int(time.time() - timeStamp)
 
         if arrivetime >= -120: #若S波已抵达超过120s则不再反馈
-            print(str(datetime.datetime.now()) + "检测到地震")
             lastmd5 = response.json()['md5']
             if response.json()['No0']['type'] == "reviewed":
                 etype = "正式测定"
             else:
                 etype = "自动测定"
-            msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震(" + etype + ")"
-            robot.send_text(msg = msg)
+            print(str(datetime.datetime.now()) + "检测到地震(" + etype + ")")
 
             #计算本地震度
             localmagnitude = 0.92 + 1.63 * float(response.json()['No0']['magnitude']) - 3.49 * math.log10(tlength)
@@ -67,13 +65,14 @@ while True:
                 localmagnitude = 0.0
             elif localmagnitude < 12:
                 localmagnitude = int(localmagnitude * 10) / 10.0    #保留1位小数
-            robot.send_text(msg = "距离震中" + str(int(tlength)) + "km" + ", 估计本地" + str(localmagnitude) + "级")
 
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
-                robot.send_text(msg = "预计抵达时间(S波)" + str(int(arrivetime)) + "s")
+                msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
             else:
-                robot.send_text(msg = "已抵达(S波)")
+                msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    已抵达(S波)"
+
+            robot.send_text(msg = msg)
 
     
     time.sleep(1)
