@@ -30,7 +30,7 @@ pip install -r requirements.txt
 2）然后将Webhook和“加签”下方的密钥分别填入文件对应位置中，如图
 ![填入信息](pictures/2.png)
 
-3）接着获取所在地的经纬度 (建议：https://lbs.qq.com/getPoint)并填入文件对应位置中，如图(图中有个错误，以文件内容为准！)
+3）接着获取所在地的经纬度 (建议：https://lbs.qq.com/getPoint) 并填入文件对应位置中，如图(图中有个错误，以文件内容为准！)
 ![填入信息](pictures/3.png)
 
 4）最后运行
