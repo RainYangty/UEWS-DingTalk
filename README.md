@@ -30,4 +30,5 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Enjoy
+## 协议
+本仓库代码依据MIT License协议开源
