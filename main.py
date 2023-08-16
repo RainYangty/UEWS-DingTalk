@@ -21,10 +21,24 @@ def length(seita, fai): #seita:纬度 fai:经度
     distance = geodesic((location[0], location[1]), (seita, fai)).km    #直接调用 geopy 库计算
     return distance
 
+err = False     #若网络错误，则设为True，避免重复打印
+
 while True:
     ctime = int(time.time() * 1000)
+    errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
     # print("get json")
-    response = requests.get("https://api.wolfx.jp/cenc_eqlist.json")
+    try:
+        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 10)  #设置等待时间，若无响应则网络出现问题
+    except:
+        if err == False:
+            print(str(errtime) + "网络错误")
+            err = True
+        time.sleep(1)
+        continue
+
+    if err == True: 
+        print(str(datetime.datetime.now()) + "网络恢复啦o((>ω< ))o")
+        err = False
 
     # print(response.json()['md5'])
 
