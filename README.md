@@ -6,6 +6,8 @@
 - 纵波预计抵达时间提示
 - 自定位置横波抵达倒数、烈度粗估
 - Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp/cenc_eqlist.json)
+- 掉线终端会吱一声咯，不会Say good bye哩
+![控制台掉线吱声](pictures/4.png)
 
 ## 注意
 
