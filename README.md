@@ -5,7 +5,7 @@
 - 使用钉钉机器人推送 (https://github.com/zhuifengshen/DingtalkChatbot)
 - 纵波预计抵达时间提示
 - 自定位置横波抵达倒数、烈度粗估
-- 中国地震台网(cenc)API (https://api.wolfx.jp) 1s调用1次
+- 中国地震台网(cenc)API (https://api.wolfx.jp/cenc_eqlist.json) 1s调用1次
 
 ## 部署
 1.安装依赖
