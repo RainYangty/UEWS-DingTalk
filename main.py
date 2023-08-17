@@ -9,6 +9,7 @@ webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
 secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
 robot = DingtalkChatbot(webhook, secret=secret)
 location = [29.825287, 106.437485]  #你的坐标 [纬度, 经度] 默认为 重庆北碚
+at_mobiles = ['']    #填写你注册钉钉的手机号码
 
 lastmd5 = 0
 robot.send_text(msg="地震预警已启动")
@@ -28,7 +29,7 @@ while True:
     errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
     # print("get json")
     try:
-        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题
+        response = requests.get("https://earthquake.rainyangty.top/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题
     except:
         if err == False:
             print(str(errtime) + "网络错误")
@@ -72,7 +73,7 @@ while True:
             else:
                 msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    已抵达(S波)"
 
-            robot.send_text(msg = msg)
+            robot.send_text(msg = msg, at_mobiles = at_mobiles)
 
     
     time.sleep(1)
