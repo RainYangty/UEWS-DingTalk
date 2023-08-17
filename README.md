@@ -8,6 +8,9 @@
 - Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp/cenc_eqlist.json)
 - 掉线终端会吱一声咯，不会Say good bye哩
 ![控制台掉线吱声](pictures/4.png)
+- 苹果系统理论上可以及时推送哩（打开钉钉的时效性通知）
+![时效性通知打开](pictures/5.png)
+![钉钉准时通知](pictures/6.png)
 
 ## 注意
 
