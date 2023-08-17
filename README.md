@@ -7,7 +7,7 @@
 - 自定位置横波抵达倒数、烈度粗估
 - Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp/cenc_eqlist.json)
 - 掉线终端会吱一声，不会Say good bye
-- 苹果系统理论上可以及时推送(操作方法见 https://github/RainYangty/UDTW/timeliness.md)
+- 苹果系统理论上可以及时推送(操作方法见 https://github.com/RainYangty/UDTW/timeliness.md)
 
 ## 注意
 
