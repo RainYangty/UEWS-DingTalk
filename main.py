@@ -63,7 +63,7 @@ while True:
         #计算与震源距离（单位km）
         print(str(datetime.datetime.now()) + "检测到地震API变化( " + response.json()['No0']['location'] + " 发生地震)计算距离")
         tlength = length(float(response.json()['No0']['latitude']), float(response.json()['No0']['longitude']))
-        print(str(datetime.datetime.now()) + "距离: " + str(tlength) + " km")
+        print(str(datetime.datetime.now()) + "距离: " + str(int(tlength)) + " km")
 
         #修正时间，按横波（取4km/s）抵达时间计算
         timeArray = time.strptime(response.json()['No0']['time'], "%Y-%m-%d %H:%M:%S")
@@ -88,13 +88,16 @@ while True:
                 localmagnitude = 0.0
             elif localmagnitude < 12:
                 localmagnitude = int(localmagnitude * 10) / 10.0    #保留1位小数
+            elif localmagnitude >= 12:
+                localmagnitude = 12.0
             print(str(datetime.datetime.now()) + "震度为" + str(localmagnitude) + "级")
             
             print(str(datetime.datetime.now()) + "将获取数据发送")
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
                 if localmagnitude >= 3.0:
-                    count = Thread(target=countdown, args = (int(arrivetime), response.json()['No0']['location'], str(int(localmagnitude))))    #启动新线程倒计时
+                    print(print(str(datetime.datetime.now()) + "本地超过 3.0 级，启动倒计时"))
+                    count = Thread(target=countdown, args = (int(arrivetime), response.json()['No0']['location'], str(localmagnitude)))    #启动新线程倒计时
                     count.start()
                 msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
             else:
