@@ -29,7 +29,7 @@ while True:
     errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
     # print("get json")
     try:
-        response = requests.get("https://earthquake.rainyangty.top/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题
+        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题
     except:
         if err == False:
             print(str(errtime) + "网络错误")
