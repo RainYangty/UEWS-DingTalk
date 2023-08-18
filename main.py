@@ -4,6 +4,7 @@ from dingtalkchatbot.chatbot import DingtalkChatbot
 import math
 import datetime
 from geopy.distance import geodesic
+from threading import Thread
 
 webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
 secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
@@ -21,6 +22,20 @@ def length(seita, fai): #seita:纬度 fai:经度
     return R * math.acos(math.sin(seita) * math.sin(31.75803 / 180.0 * math.pi) + math.cos(seita) * math.cos(31.75803 / 180.0 * math.pi) * math.cos(117.253804 / 180.0 * math.pi - fai))"""
     distance = geodesic((location[0], location[1]), (seita, fai)).km    #直接调用 geopy 库计算
     return distance
+
+def countdown(arrivetime, pos, localmagnitude):     #倒计时
+    time.sleep(1)
+    arrivetime -= 1
+    if arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
+        robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + localmagnitude + ")后抵达")
+    elif arrivetime <= 10 and arrivetime > 0:
+        robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + localmagnitude + ")后抵达", at_mobiles = at_mobiles)
+    elif arrivetime == 0:
+        robot.send_text(msg = "已 (" + pos + " " + localmagnitude + ")抵达", at_mobiles = at_mobiles)
+    if arrivetime <= 0:
+        return
+    else:
+        countdown(arrivetime = arrivetime, pos = response.json()['No0']['location'], localmagnitude = localmagnitude)
 
 err = False     #若网络错误，则设为True，避免重复打印
 
@@ -46,7 +61,7 @@ while True:
     if response.json()['md5'] != lastmd5:
         lastmd5 = response.json()['md5']
         #计算与震源距离（单位km）
-        print(str(datetime.datetime.now()) + "检测到地震API变化(" + response.json()['No0']['location'] + ")计算距离")
+        print(str(datetime.datetime.now()) + "检测到地震API变化( " + response.json()['No0']['location'] + " 发生地震)计算距离")
         tlength = length(float(response.json()['No0']['latitude']), float(response.json()['No0']['longitude']))
         print(str(datetime.datetime.now()) + "距离: " + str(tlength) + " km")
 
@@ -55,9 +70,9 @@ while True:
         timeStamp = time.mktime(timeArray)
         arrivetime = tlength / 4 - int(time.time() - timeStamp)
         if arrivetime > 0:
-            print(str(datetime.datetime.now()) + "时间修正完毕, " + str(arrivetime) + "s 后抵达(S波)")
+            print(str(datetime.datetime.now()) + "时间修正完毕, " + str(int(arrivetime)) + "s 后抵达(S波)")
         else:
-            print(str(datetime.datetime.now()) + "时间修正完毕, " + str(0 - arrivetime) + "s 前已抵达(S波)")
+            print(str(datetime.datetime.now()) + "时间修正完毕, " + str(int(0 - arrivetime)) + "s 前已抵达(S波)")
 
         if arrivetime >= -120: #若S波已抵达超过120s则不再反馈
             if response.json()['No0']['type'] == "reviewed":
@@ -78,10 +93,12 @@ while True:
             print(str(datetime.datetime.now()) + "将获取数据发送")
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
+                if localmagnitude >= 3.0:
+                    count = Thread(target=countdown, args = (int(arrivetime), response.json()['No0']['location'], str(int(localmagnitude))))    #启动新线程倒计时
+                    count.start()
                 msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
             else:
                 msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    已抵达(S波)"
-
             robot.send_text(msg = msg, at_mobiles = at_mobiles)
             print(str(datetime.datetime.now()) + "发送成功")
         else:
