@@ -44,8 +44,9 @@ while True:
     # print(response.json()['md5'])
 
     if response.json()['md5'] != lastmd5:
+        lastmd5 = response.json()['md5']
         #计算与震源距离（单位km）
-        print(str(datetime.datetime.now()) + "检测到地震API变化，计算距离")
+        print(str(datetime.datetime.now()) + "检测到地震API变化(" + response.json()['No0']['location'] + ")计算距离")
         tlength = length(float(response.json()['No0']['latitude']), float(response.json()['No0']['longitude']))
         print(str(datetime.datetime.now()) + "距离: " + str(tlength) + " km")
 
@@ -53,10 +54,12 @@ while True:
         timeArray = time.strptime(response.json()['No0']['time'], "%Y-%m-%d %H:%M:%S")
         timeStamp = time.mktime(timeArray)
         arrivetime = tlength / 4 - int(time.time() - timeStamp)
-        print(str(datetime.datetime.now()) + "时间修正完毕, " + arrivetime + "s 后抵达(S波)")
+        if arrivetime > 0:
+            print(str(datetime.datetime.now()) + "时间修正完毕, " + str(arrivetime) + "s 后抵达(S波)")
+        else:
+            print(str(datetime.datetime.now()) + "时间修正完毕, " + str(0 - arrivetime) + "s 前已抵达(S波)")
 
         if arrivetime >= -120: #若S波已抵达超过120s则不再反馈
-            lastmd5 = response.json()['md5']
             if response.json()['No0']['type'] == "reviewed":
                 etype = "正式测定"
             else:
@@ -70,7 +73,7 @@ while True:
                 localmagnitude = 0.0
             elif localmagnitude < 12:
                 localmagnitude = int(localmagnitude * 10) / 10.0    #保留1位小数
-            print(str(datetime.datetime.now()) + "震度为" + localmagnitude + "级")
+            print(str(datetime.datetime.now()) + "震度为" + str(localmagnitude) + "级")
             
             print(str(datetime.datetime.now()) + "将获取数据发送")
             if arrivetime > 0:
@@ -81,6 +84,8 @@ while True:
 
             robot.send_text(msg = msg, at_mobiles = at_mobiles)
             print(str(datetime.datetime.now()) + "发送成功")
+        else:
+            print(str(datetime.datetime.now()) + "抵达时间超过120s, 不再发送")
 
     
     time.sleep(1)
