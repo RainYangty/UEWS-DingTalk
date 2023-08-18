@@ -45,12 +45,15 @@ while True:
 
     if response.json()['md5'] != lastmd5:
         #计算与震源距离（单位km）
+        print(str(datetime.datetime.now()) + "检测到地震API变化，计算距离")
         tlength = length(float(response.json()['No0']['latitude']), float(response.json()['No0']['longitude']))
+        print(str(datetime.datetime.now()) + "距离: " + str(tlength) + " km")
 
         #修正时间，按横波（取4km/s）抵达时间计算
         timeArray = time.strptime(response.json()['No0']['time'], "%Y-%m-%d %H:%M:%S")
         timeStamp = time.mktime(timeArray)
         arrivetime = tlength / 4 - int(time.time() - timeStamp)
+        print(str(datetime.datetime.now()) + "时间修正完毕, " + arrivetime + "s 后抵达(S波)")
 
         if arrivetime >= -120: #若S波已抵达超过120s则不再反馈
             lastmd5 = response.json()['md5']
@@ -58,15 +61,18 @@ while True:
                 etype = "正式测定"
             else:
                 etype = "自动测定"
-            print(str(datetime.datetime.now()) + "检测到地震(" + etype + ")")
+            print(str(datetime.datetime.now()) + "播报类型为" + etype)
 
             #计算本地震度
+            print(str(datetime.datetime.now()) + "计算本地震度")
             localmagnitude = 0.92 + 1.63 * float(response.json()['No0']['magnitude']) - 3.49 * math.log10(tlength)
             if localmagnitude <= 0:
                 localmagnitude = 0.0
             elif localmagnitude < 12:
                 localmagnitude = int(localmagnitude * 10) / 10.0    #保留1位小数
-
+            print(str(datetime.datetime.now()) + "震度为" + localmagnitude + "级")
+            
+            print(str(datetime.datetime.now()) + "将获取数据发送")
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
                 msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
@@ -74,6 +80,7 @@ while True:
                 msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    已抵达(S波)"
 
             robot.send_text(msg = msg, at_mobiles = at_mobiles)
+            print(str(datetime.datetime.now()) + "发送成功")
 
     
     time.sleep(1)
