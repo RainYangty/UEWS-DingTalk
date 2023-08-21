@@ -1,50 +1,91 @@
-import time
-import requests
-from dingtalkchatbot.chatbot import DingtalkChatbot
-import math
-import datetime
-from geopy.distance import geodesic
-from threading import Thread
+while True:
+    try:
+        import time
+        import requests
+        from dingtalkchatbot.chatbot import DingtalkChatbot
+        import math
+        import datetime
+        from geopy.distance import geodesic
+        from threading import Thread
+        import pygame
 
-webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
-secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
-robot = DingtalkChatbot(webhook, secret=secret)
-location = [29.825287, 106.437485]  #你的坐标 [纬度, 经度] 默认为 重庆北碚
-at_mobiles = ['']    #填写你注册钉钉的手机号码
+        webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
+        secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
+        robot = DingtalkChatbot(webhook, secret=secret)  # 方式二：勾选“加签”选项时使用（v1.5以上新功能）
+        location = [29.825287, 106.437485]    #你的坐标 [纬度, 经度] 默认为 重庆北碚
+        at_mobiles = ['']    #填写你注册钉钉的手机号码
 
-lastmd5 = 0
-robot.send_text(msg="地震预警已启动")
+        lastmd5 = 0
+        robot.send_text(msg = str(datetime.datetime.now()) + "地震预警已启动")
 
-def length(seita, fai): #seita:纬度 fai:经度        
-    """ R = 6371.0      计算方法参考：https://www.zhihu.com/question/265407371，误差较大
-    seita = seita / 180 * math.pi
-    fai = fai / 180 * math.pi
-    return R * math.acos(math.sin(seita) * math.sin(31.75803 / 180.0 * math.pi) + math.cos(seita) * math.cos(31.75803 / 180.0 * math.pi) * math.cos(117.253804 / 180.0 * math.pi - fai))"""
-    distance = geodesic((location[0], location[1]), (seita, fai)).km    #直接调用 geopy 库计算
-    return distance
+        def playsound(file):
+            pygame.mixer.init()
+            pygame.mixer.music.load(file)
+            pygame.mixer.music.play(1)
+            while pygame.mixer.music.get_busy():  # 在音频播放为完成之前不退出程序
+                return
 
-def countdown(arrivetime, pos, localmagnitude):     #倒计时
-    time.sleep(1)
-    arrivetime -= 1
-    if arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
-        robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + localmagnitude + ")后抵达")
-    elif arrivetime <= 10 and arrivetime > 0:
-        robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + localmagnitude + ")后抵达", at_mobiles = at_mobiles)
-    elif arrivetime == 0:
-        robot.send_text(msg = "已 (" + pos + " " + localmagnitude + ")抵达", at_mobiles = at_mobiles)
-    if arrivetime <= 0:
-        return
-    else:
-        countdown(arrivetime = arrivetime, pos = response.json()['No0']['location'], localmagnitude = localmagnitude)
+        def length(seita, fai): #seita:纬度 fai:经度        
+            """ R = 6371.0      计算方法参考：https://www.zhihu.com/question/265407371，误差较大
+            seita = seita / 180 * math.pi
+            fai = fai / 180 * math.pi
+            return R * math.acos(math.sin(seita) * math.sin(31.75803 / 180.0 * math.pi) + math.cos(seita) * math.cos(31.75803 / 180.0 * math.pi) * math.cos(117.253804 / 180.0 * math.pi - fai))"""
+            distance = geodesic((location[0], location[1]), (seita, fai)).km
+            return distance
 
-err = False     #若网络错误，则设为True，避免重复打印
+        def countdown(arrivetime, pos, localmagnitude, startarrti):     #倒计时
+            time.sleep(1)
+            arrivetime -= 1
+            if localmagnitude < 5.0 and startarrti - arrivetime < 4:
+                countdown(arrivetime = arrivetime, pos = response.json()['No0']['location'], localmagnitude = localmagnitude, startarrti=startarrti)
+                return
+            if localmagnitude >= 5.0 and startarrti - arrivetime < 13:
+                countdown(arrivetime = arrivetime, pos = response.json()['No0']['location'], localmagnitude = localmagnitude, startarrti=startarrti)
+                return
+            if localmagnitude < 5.0 and startarrti - arrivetime >= 4 and arrivetime % 10 != 0 and arrivetime % 10 != 9:
+                playsound(r"/home/RainYangty/audio/countdown/ding.mp3")   #播放地震倒计时
+            if localmagnitude >= 5.0 and startarrti - arrivetime >= 13 and arrivetime % 10 != 0 and arrivetime % 10 != 9:
+                playsound(r"/home/RainYangty/audio/countdown/ding.mp3")   #播放地震倒计时
+            if arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
+                playsound(r"/home/RainYangty/audio/countdown/" + str(arrivetime) + ".mp3")   #播放地震倒计时
+                print(arrivetime)
+                robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localmagnitude) + ")后抵达")
+            elif arrivetime <= 10 and arrivetime > 0:
+                playsound(r"/home/RainYangty/audio/countdown/" + str(arrivetime) + ".mp3")   #播放地震倒计时
+                print(arrivetime)
+                robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localmagnitude) + ")后抵达", at_mobiles = at_mobiles)
+            elif arrivetime == 0:
+                playsound(r"/home/RainYangty/audio/countdown/arrive.mp3")   #播放地震倒计时
+                print("抵达")
+                robot.send_text(msg = "已 (" + pos + " " + str(localmagnitude) + ")抵达", at_mobiles = at_mobiles)
+            if arrivetime <= 0:
+                return
+            else:
+                countdown(arrivetime = arrivetime, pos = response.json()['No0']['location'], localmagnitude = localmagnitude, startarrti=startarrti)
+                return
+
+        def countdownau(arrivetime, pos, localmagnitude):     #倒计时
+            time.sleep(1)
+            arrivetime -= 1
+            playsound(r"/home/RainYangty/audio/countdown/ding.mp3")
+            if arrivetime <= 0:
+                return
+            else:
+                countdownau(arrivetime = arrivetime)
+
+        err = False     #若网络错误，则设为True，避免重复打印
+
+        playsound(r"/home/RainYangty/audio/update.mp3")    #启动声音
+        break
+    except:
+        continue
 
 while True:
     ctime = int(time.time() * 1000)
     errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
     # print("get json")
     try:
-        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题
+        response = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200)  #设置等待时间，若无响应则网络出现问题： https://api.wolfx.jp/cenc_eqlist.json
     except:
         if err == False:
             print(str(errtime) + "网络错误")
@@ -59,6 +100,10 @@ while True:
     # print(response.json()['md5'])
 
     if response.json()['md5'] != lastmd5:
+        #play = Thread(target=playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放地震发现声音
+        #play.start()
+        playsound(r"/home/RainYangty/audio/cenc.mp3")
+
         lastmd5 = response.json()['md5']
         #计算与震源距离（单位km）
         print(str(datetime.datetime.now()) + "检测到地震API变化( " + response.json()['No0']['location'] + " 发生地震)计算距离")
@@ -96,12 +141,18 @@ while True:
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
                 if localmagnitude >= 3.0:
+                    #play = Thread(target=playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放有感地震警报
+                    #play.start()
+                    if localmagnitude >= 5.0:
+                        playsound(r"/home/RainYangty/audio/eew2.mp3")
+                    else:
+                        playsound(r"/home/RainYangty/audio/eew1.mp3")
                     print(print(str(datetime.datetime.now()) + "本地超过 3.0 级，启动倒计时"))
-                    count = Thread(target=countdown, args = (int(arrivetime), response.json()['No0']['location'], str(localmagnitude)))    #启动新线程倒计时
+                    count = Thread(target=countdown, args = (int(arrivetime), response.json()['No0']['location'], localmagnitude, int(arrivetime)))    #启动新线程倒计时
                     count.start()
-                msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
+                msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s (" + etype + ")"
             else:
-                msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    已抵达(S波)"
+                msg = response.json()['No0']['location'] + "(" + response.json()['No0']['latitude'] + ", " + response.json()['No0']['longitude'] + ")于" + response.json()['No0']['time'] + "发生" + response.json()['No0']['magnitude'] + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地" + str(localmagnitude) + "级 " + "    已抵达(S波) (" + etype + ")"
             robot.send_text(msg = msg, at_mobiles = at_mobiles)
             print(str(datetime.datetime.now()) + "发送成功")
         else:
