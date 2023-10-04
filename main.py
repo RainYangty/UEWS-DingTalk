@@ -82,20 +82,24 @@ while True:
 
 def cenc():
     print("cenc")
+    robot.send_text(msg = "cenc", at_mobiles = at_mobiles)
     #cenc测定播报
     lastmd5 = 0
+    err = False
     while True:
         ctime = int(time.time() * 1000)
         errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
-        err = True
         try:
             eqlist = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200) #设置等待时间，若无响应则网络出现问题： https://api.wolfx.jp/cenc_eqlist.json
+            if err == True: 
+                print(str(datetime.datetime.now()) + "网络恢复啦o((>ω< ))o")
+                err = False
         except:
             if err == False:
                 print(str(errtime) + "网络错误")
                 err = True
             time.sleep(1)
-            continue
+
         if eqlist.json()['md5'] != lastmd5:
             playsound(r"/home/RainYangty/audio/cenc.mp3")
             lastmd5 = eqlist.json()['md5']
@@ -121,19 +125,24 @@ def cenc():
 
 def sc_eew():
     print("sc_eew")
+    robot.send_text(msg = "sc_eew", at_mobiles = at_mobiles)
     eewlastid = 0
+    err = False
     while True:
         ctime = int(time.time() * 1000)
         errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
         # print("get json")
         try:
             eewwarn = requests.get("https://api.wolfx.jp/sc_eew.json", timeout = 200)   #设置等待时间，若无响应则网络出现问题：https://api.wolfx.jp/sc_eew.json
+            if err == True: 
+                print(str(datetime.datetime.now()) + "网络恢复啦o((>ω< ))o")
+                err = False
         except:
             if err == False:
                 print(str(errtime) + "网络错误")
                 err = True
             time.sleep(1)
-            continue
+
         #eew预警
         if eewwarn.json()['EventID'] != eewlastid:
             #play = Thread(target=playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放地震发现声音
