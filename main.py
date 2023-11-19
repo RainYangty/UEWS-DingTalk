@@ -88,7 +88,7 @@ def cenc():
         errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
         eqlist = ""
         try:
-            eqlist = requests.get("https://earthquake.rainyangty.top/cenc_eqlist.json", timeout = 200) #设置等待时间，若无响应则网络出现问题： https://api.wolfx.jp/cenc_eqlist.json
+            eqlist = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200) #设置等待时间，若无响应则网络出现问题： https://api.wolfx.jp/cenc_eqlist.json
         except:
             time.sleep(1)
             continue
@@ -127,7 +127,7 @@ def sc_eew():
         eewwarn = ""
         # print("get json")
         try:
-            eewwarn = requests.get("https://earthquake.rainyangty.top/sc_eew.json", timeout = 200)   #设置等待时间，若无响应则网络出现问题：https://api.wolfx.jp/sc_eew.json
+            eewwarn = requests.get("https://api.wolfx.jp/sc_eew.json", timeout = 200)   #设置等待时间，若无响应则网络出现问题：https://api.wolfx.jp/sc_eew.json
             if err == True: 
                 print(str(datetime.datetime.now()) + "网络恢复啦o((>ω< ))o")
                 err = False
