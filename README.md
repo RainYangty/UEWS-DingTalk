@@ -5,16 +5,14 @@
 - 使用钉钉机器人推送 (https://github.com/zhuifengshen/DingtalkChatbot)
 - 纵波预计抵达时间提示
 - 自定位置横波抵达倒数、烈度粗估
-- Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp/cenc_eqlist.json)
+- Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp)
 - 掉线终端会吱一声，不会Say good bye
 - 苹果系统理论上可以及时推送(操作方法见 [https://github.com/RainYangty/UDTW/timeliness.md](https://github.com/RainYangty/UDTW/blob/main/timeliness.md))
 - 地震倒计时和播报功能(具体见 [https://github.com/RainYangty/UDTW/countdown.md](https://github.com/RainYangty/UDTW/blob/main/countdown.md))
 
 ## 注意
 
-1.API只能1s调用1次！！！API只能1s调用1次！！！API只能1s调用1次！！！
-
-2.若S波抵达超过120s则不再报
+API只能1s调用1次！！！API只能1s调用1次！！！API只能1s调用1次！！！
 
 ## 部署
 1.安装依赖
@@ -28,10 +26,15 @@ pip install -r requirements.txt
 ![勾选“加签”](pictures/1.png)
 
 2）然后将Webhook和“加签”下方的密钥分别填入文件对应位置中，如图，并在相应位置填上手机号
-![填入信息](pictures/2.png)
+```
+webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
+secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
+```
 
 3）接着获取所在地的经纬度 (建议：https://lbs.qq.com/getPoint) 并填入文件对应位置中，如图(图中有个错误，以文件内容为准！)
-![填入信息](pictures/3.png)
+```
+location = [31.75803, 117.253804]    #你的坐标 [纬度, 经度] 默认为 合肥一六八中学
+```
 
 4）最后运行
 ```
@@ -42,7 +45,7 @@ python main.py
 
 1)给予操作权限
 ```
-    chmod 777  main.py
+chmod 777  main.py
 ```
 2)添加服务,保存脚本为/etc/init.d/UDTW文件(请修改```nohup python3 ```后的地址，使之指向main.py)
 ```
