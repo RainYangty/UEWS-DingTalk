@@ -76,7 +76,6 @@ def countdown(arrivetime, pos, localmagnitude, startarrti):
     return
     
 err = False     #若网络错误，则设为True，避免重复打印
-playsound(path + r"\audio/update.mp3")    #启动声音
 
 #速报模块，使用中国地震台网信息
 def cenc():

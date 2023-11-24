@@ -7,8 +7,9 @@
 - 自定位置横波抵达倒数、烈度粗估
 - Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp)
 - 掉线终端会吱一声，不会Say good bye
-- 苹果系统理论上可以及时推送(操作方法见 [https://github.com/RainYangty/UDTW/timeliness.md](https://github.com/RainYangty/UDTW/blob/main/timeliness.md))
-- 地震倒计时和播报功能(具体见 [https://github.com/RainYangty/UDTW/countdown.md](https://github.com/RainYangty/UDTW/blob/main/countdown.md))
+- 苹果系统理论上可以及时推送(操作方法见 [timeliness.md](timeliness.md))
+- 地震倒计时和播报功能(具体见 [countdown.md](countdown.md))
+- 可配置开启自启动(树莓派见[raspberryrun.md](raspberryrun.md))
 
 ## 注意
 
@@ -39,44 +40,6 @@ location = [31.75803, 117.253804]    #你的坐标 [纬度, 经度] 默认为 �
 4）最后运行
 ```
 python main.py
-```
-
-3.(树莓派部署)添加服务，开机自启
-
-1)给予操作权限
-```
-chmod 777  main.py
-```
-2)添加服务,保存脚本为/etc/init.d/UDTW文件(请修改```nohup python3 ```后的地址，使之指向main.py)
-```
-#!/bin/bash
-### BEGIN INIT INFO
-# Provides:          XXX
-# Required-Start:
-# Required-Stop:
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: Start XXX daemon at boot time
-# Description:       Start XXX daemon at boot time
-### END INIT INFO
-case "$1" in
-    start):
-        echo "Starting app"
-        nohup python3 main.py & 
-    ;;
-    stop):
-        echo "to"
-        #kill $( ps aux | grep -m 1 'python3 main.py' | awk '{ print $2 }') ;; *)
-        echo "Usage: service start_tool start|stop"
-        exit 1 ;;
-esac
-
-exit 0
-
-```
-4)设置为开机启动项(若提示失败请刷新配置 ```systemctl daemon-reload``` )
-```
-sudo update-rc.d UDTW defaults
 ```
 
 ## 协议
