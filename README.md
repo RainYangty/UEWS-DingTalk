@@ -8,8 +8,8 @@
 - Wolfx 防灾(防災) 实用类 免费API接口 (https://api.wolfx.jp)
 - 掉线终端会吱一声，不会Say good bye
 - 苹果系统理论上可以及时推送(操作方法见 [timeliness.md](timeliness.md))
-- 地震倒计时和播报功能(具体见 [countdown.md](countdown.md))
 - 可配置开启自启动(树莓派见[raspberryrun.md](raspberryrun.md))
+- 可配置Homeassistant传感器([HA_UDTW.md](homeassistant/HA_UDTW.md))
 
 ## 注意
 
@@ -26,10 +26,14 @@ pip install -r requirements.txt
 1）首先创建钉钉群聊，并添加机器人（网上有很详细流程），不过要将安全设置中勾选“加签”，如图
 ![勾选“加签”](pictures/1.png)
 
-2）然后将Webhook和“加签”下方的密钥分别填入文件对应位置中，如图，并在相应位置填上手机号
+2）然后将Webhook和“加签”下方的密钥分别填入文件对应位置中，如图，并在相应位置填上手机号(可选，即可@用户)
 ```
 webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
 secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
+```
+
+```
+at_mobiles = ['']    #填写你注册钉钉的手机号码
 ```
 
 3）接着获取所在地的经纬度 (建议：https://lbs.qq.com/getPoint) 并填入文件对应位置中，如图(图中有个错误，以文件内容为准！)

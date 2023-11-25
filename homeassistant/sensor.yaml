@@ -1,0 +1,57 @@
+- platform: command_line
+  name: CEQInfo
+  scan_interval: 1
+  command: "python3 haudtw.py"
+  json_attributes: # 键名可为大小写
+    - cenc
+    - eew
+
+- platform: template
+  # 传感器列表
+  sensors:
+    # 实体名称：小写，下划线
+    cenclocation:
+      # 在前端显示的传感器昵称
+      friendly_name: "震中"
+      # 传感器数值的单位
+      # unit_of_measurement: ""
+      #（必须）定义一个获取传感器状态（数值）的模板
+      # 这里就是获取上面定义的命令行传感器实体 sensor.CEQInfo 的相应属性值，注意大小写
+      value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[0]}}"
+    # 以下配置类似，不再赘述
+    cencmagnitude:
+      friendly_name: "震级"
+      unit_of_measurement: "级"
+      value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[1]}}"
+    cenctlength:
+      friendly_name: "震中距"
+      unit_of_measurement: "km"
+      value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[2]}}"
+    cenclocalmagnitude:
+      friendly_name: "本地烈度"
+      # unit_of_measurement: '%'
+      value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[3]}}"
+    cenctype:
+      friendly_name: "速报类型"
+      # unit_of_measurement: '%'
+      value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[4]}}"
+    eewlocation:
+      friendly_name: "震中"
+      # unit_of_measurement: '%'
+      value_template: "{{state_attr('sensor.ceqinfo', 'eew')[0]}}"
+    eewmagnitude:
+      friendly_name: "震级"
+      unit_of_measurement: "级"
+      value_template: "{{state_attr('sensor.ceqinfo', 'eew')[1]}}"
+    eewtlength:
+      friendly_name: "震中距"
+      unit_of_measurement: "km"
+      value_template: "{{state_attr('sensor.ceqinfo', 'eew')[2]}}"
+    eewlocalmagnitude:
+      friendly_name: "本地烈度"
+      # unit_of_measurement: '%'
+      value_template: "{{state_attr('sensor.ceqinfo', 'eew')[3]}}"
+    eewtype:
+      friendly_name: "抵达时间 s"
+      # unit_of_measurement: "s"
+      value_template: "{{state_attr('sensor.ceqinfo', 'eew')[4]}}"
