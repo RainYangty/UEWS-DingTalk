@@ -35,6 +35,10 @@
       friendly_name: "速报类型"
       # unit_of_measurement: '%'
       value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[4]}}"
+    cenctime:
+      friendly_name: "发震时间"
+      # unit_of_measurement: '%'
+      value_template: "{{state_attr('sensor.ceqinfo', 'cenc')[5]}}"
     eewlocation:
       friendly_name: "震中"
       # unit_of_measurement: '%'
@@ -55,3 +59,6 @@
       friendly_name: "抵达时间 s"
       # unit_of_measurement: "s"
       value_template: "{{state_attr('sensor.ceqinfo', 'eew')[4]}}"
+    eewtime:
+      friendly_name: "发震时间"
+      value_template: "{{state_attr('sensor.ceqinfo', 'eew')[5]}}"
