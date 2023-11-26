@@ -23,7 +23,7 @@ def cenc():
     try:
         eqlist = requests.get("https://api.wolfx.jp/cenc_eqlist.json", timeout = 200) #设置等待时间，若无响应则网络出现问题： https://api.wolfx.jp/cenc_eqlist.json
     except:
-        cencinfo = ["error", "error", "error", "error", "error"]
+        cencinfo = ["error", "error", "error", "error", "error", "error"]
         return cencinfo
 
     if eqlist.json()['md5'] != lastmd5:
@@ -45,7 +45,7 @@ def cenc():
             localmagnitude = 12.0
 
 
-        cencinfo = [eqlist.json()['No0']['location'], eqlist.json()['No0']['magnitude'], str(int(tlength)), str(localmagnitude), etype]
+        cencinfo = [eqlist.json()['No0']['location'], eqlist.json()['No0']['magnitude'], str(int(tlength)), str(localmagnitude), etype, eqlist.json()['No0']['time']]
         return cencinfo
     
 # 预警模块，使用wolfx公开API
@@ -60,7 +60,7 @@ def sc_eew():
     try:
         eewwarn = requests.get("https://api.wolfx.jp/sc_eew.json")   #设置等待时间，若无响应则网络出现问题：https://api.wolfx.jp/sc_eew.json
     except:
-        eewinfo = ["error", "error", "error", "error", "error"]
+        eewinfo = ["error", "error", "error", "error", "error", "error"]
         return 
 
     #eew预警
@@ -85,11 +85,11 @@ def sc_eew():
             localmagnitude = 12.0
         
         if arrivetime > 0:
-            eewinfo = [eewwarn.json()['HypoCenter'], str(eewwarn.json()['Magunitude']), str(int(tlength)), str(localmagnitude), str(int(arrivetime))]
+            eewinfo = [eewwarn.json()['HypoCenter'], str(eewwarn.json()['Magunitude']), str(int(tlength)), str(localmagnitude), str(int(arrivetime)), eewwarn.json()['OriginTime']]
             return eewinfo
             # msg = eewwarn.json()['HypoCenter'] + "(" + str(eewwarn.json()['Latitude']) + ", " + str(eewwarn.json()['Longitude']) + ")于" + eewwarn.json()['OriginTime'] + "发生" + str(eewwarn.json()['Magunitude']) + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地烈度" + str(localmagnitude) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
         else:
-            eewinfo = [eewwarn.json()['HypoCenter'], str(eewwarn.json()['Magunitude']), str(int(tlength)), str(localmagnitude), "抵达"]
+            eewinfo = [eewwarn.json()['HypoCenter'], str(eewwarn.json()['Magunitude']), str(int(tlength)), str(localmagnitude), "抵达", eewwarn.json()['OriginTime']]
             return eewinfo
         
 UDTWinfo = {}
