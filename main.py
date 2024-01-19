@@ -176,8 +176,8 @@ def sc_eew():
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
                 if localmagnitude >= 0.0:
-                    play = Thread(target=# playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放有感地震警报
-                    play.start()
+                    #play = Thread(target=# playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放有感地震警报
+                    #play.start()
                     if localmagnitude >= 5.0:
                         playsound(path + r"\audio/eew2.mp3")
                     else:
