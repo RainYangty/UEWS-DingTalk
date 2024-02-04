@@ -100,14 +100,14 @@ def cenc():
                 zzzz = 1
             lastmd5 = eqlist.json()['md5']
             etype = ""
-            if eqlist.json()['No0']['type'] == "reviewed":
+            if eqlist.json()['No1']['type'] == "reviewed":
                 etype = "正式测定"
             else:
                 etype = "自动测定"
 
-            tlength = length(float(eqlist.json()['No0']['latitude']), float(eqlist.json()['No0']['longitude'])) #距离
+            tlength = length(float(eqlist.json()['No1']['latitude']), float(eqlist.json()['No1']['longitude'])) #距离
 
-            localmagnitude = 0.92 + 1.63 * float(eqlist.json()['No0']['magnitude']) - 3.49 * math.log10(tlength) #本地烈度
+            localmagnitude = 0.92 + 1.63 * float(eqlist.json()['No1']['magnitude']) - 3.49 * math.log10(tlength) #本地烈度
             if localmagnitude <= 0:
                 localmagnitude = 0.0
             elif localmagnitude < 12:
@@ -115,8 +115,8 @@ def cenc():
             elif localmagnitude >= 12:
                 localmagnitude = 12.0
 
-            print(str(datetime.datetime.now()) + " cenc" + etype + "( " + eqlist.json()['No0']['location'] + " 发生地震)距离: " + str(int(tlength)) + " km 本地本地烈度：" + str(localmagnitude))
-            robot.send_text(msg = str(datetime.datetime.now()) + " cenc" + etype + "( " + eqlist.json()['No0']['location'] + " 发生地震)距离: " + str(int(tlength)) + " km 本地本地烈度：" + str(localmagnitude), at_mobiles = at_mobiles)
+            print(str(datetime.datetime.now()) + " cenc" + etype + "( " + eqlist.json()['No1']['location'] + " 发生地震)距离: " + str(int(tlength)) + " km 本地本地烈度：" + str(localmagnitude))
+            robot.send_text(msg = str(datetime.datetime.now()) + " cenc" + etype + "( " + eqlist.json()['No1']['location'] + " 发生地震)距离: " + str(int(tlength)) + " km 本地本地烈度：" + str(localmagnitude), at_mobiles = at_mobiles)
         time.sleep(1)
 
 # 预警模块，使用wolfx公开API
