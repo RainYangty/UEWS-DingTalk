@@ -5,27 +5,18 @@ import math
 import datetime
 from geopy.distance import geodesic
 from threading import Thread
-import pygame
 import os
 
 webhook = 'https://oapi.dingtalk.com/robot/send?access_token=你的token'
 secret = 'SEC...你的密钥'  # 可选：创建机器人勾选“加签”选项时使用
 robot = DingtalkChatbot(webhook, secret=secret)  # 方式二：勾选“加签”选项时使用（v1.5以上新功能）
-location = [31.75803, 117.253804]    #你的坐标 [纬度, 经度] 默认为 合肥一六八中学 嘿嘿
+location = [31.75803, 117.253804]    #你的坐标 [纬度, 经度] 默认为 合肥一六八中学
 at_mobiles = ['']    #填写你注册钉钉的手机号码
 path = os.path.abspath('.')
 ewarn = False
 
 lastmd5 = 0
 robot.send_text(msg = str(datetime.datetime.now()) + "地震预警已启动")
-
-# 音频播放模块
-def playsound(file):
-    pygame.mixer.init()
-    pygame.mixer.music.load(file)
-    pygame.mixer.music.play(1)
-    while pygame.mixer.music.get_busy():  # 在音频播放为完成之前不退出程序
-        return
 
 # 距离计算模块
 def length(seita, fai): #seita:纬度 fai:经度        
@@ -38,18 +29,18 @@ def countdown(arrivetime, pos, localmagnitude, startarrti):
     arrivetime -= 1
     if localmagnitude < 5.0 and startarrti - arrivetime >= 4:
         if arrivetime % 10 != 0 and arrivetime % 10 != 9:
-            playsound(path + r"\audio/countdown/ding.mp3")
+            # playsound(path + r"\audio/countdown/ding.mp3")
             zzzz = 1
         elif arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
-            playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")
+            # playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")
             print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
             robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localmagnitude) + ")后抵达")
         if arrivetime <= 10 and arrivetime > 0:
-            playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")   #播放地震倒计时
+            # playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")   #播放地震倒计时
             print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
             robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localmagnitude) + ")后抵达", at_mobiles = at_mobiles)
         elif arrivetime == 0:
-            playsound(path + r"\audio/countdown/arrive.mp3")   #播放地震倒计时
+            # playsound(path + r"\audio/countdown/arrive.mp3")   #播放地震倒计时
             print(str(datetime.datetime.now()) + "抵达")
             robot.send_text(msg = "已 (" + pos + " " + str(localmagnitude) + ")抵达", at_mobiles = at_mobiles)
         elif arrivetime < 0:
@@ -57,18 +48,18 @@ def countdown(arrivetime, pos, localmagnitude, startarrti):
             return
     elif localmagnitude >= 5.0 and startarrti - arrivetime >= 13:
         if arrivetime % 10 != 0 and arrivetime % 10 != 9:
-            playsound(path + r"\audio/countdown/ding.mp3")
+            # playsound(path + r"\audio/countdown/ding.mp3")
             zzzz = 1
         elif arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
-            playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")
+            # playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")
             print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
             robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localmagnitude) + ")后抵达")
         if arrivetime <= 10 and arrivetime > 0:
-            playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")   #播放地震倒计时
+            # playsound(path + r"\audio/countdown/" + str(arrivetime) + ".mp3")   #播放地震倒计时
             print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
             robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localmagnitude) + ")后抵达", at_mobiles = at_mobiles)
         elif arrivetime == 0:
-            playsound(path + r"\audio/countdown/arrive.mp3")   #播放地震倒计时
+            # playsound(path + r"\audio/countdown/arrive.mp3")   #播放地震倒计时
             print(str(datetime.datetime.now()) + "抵达")
             robot.send_text(msg = "已 (" + pos + " " + str(localmagnitude) + ")抵达", at_mobiles = at_mobiles)
         elif arrivetime < 0:
@@ -96,7 +87,7 @@ def cenc():
 
         if eqlist.json()['md5'] != lastmd5:
             if ewarn == False:
-                playsound(path + r"\audio/cenc.mp3")
+                # playsound(path + r"\audio/cenc.mp3")
                 zzzz = 1
             lastmd5 = eqlist.json()['md5']
             etype = ""
@@ -143,9 +134,9 @@ def sc_eew():
         #eew预警
         if eewwarn.json()['EventID'] != eewlastid:
             ewarn = True
-            #play = Thread(target=playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放地震发现声音
+            #play = Thread(target=# playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放地震发现声音
             #play.start()
-            playsound(path + r"\audio/update.mp3")
+            # playsound(path + r"\audio/update.mp3")
 
             eewlastid = eewwarn.json()['EventID']
             #计算与震源距离（单位km）
@@ -179,9 +170,11 @@ def sc_eew():
                     #play = Thread(target=# playsound, args = (r"/home/RainYangty/audio/cenc.mp3"))    #启动新线程播放有感地震警报
                     #play.start()
                     if localmagnitude >= 5.0:
-                        playsound(path + r"\audio/eew2.mp3")
+                        # playsound(path + r"\audio/eew2.mp3")
+                        zzzz = 1
                     else:
-                        playsound(path + r"\audio/eew1.mp3")
+                        # playsound(path + r"\audio/eew1.mp3")
+                        zzzz = 1
                     print(print(str(datetime.datetime.now()) + "本地超过 3.0 级，启动倒计时"))
                     count = Thread(target=countdown, args = (int(arrivetime), eewwarn.json()['HypoCenter'], localmagnitude, int(arrivetime)))    #启动新线程倒计时
                     count.start()
