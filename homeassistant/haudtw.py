@@ -29,14 +29,14 @@ def cenc():
     if eqlist.json()['md5'] != lastmd5:
         lastmd5 = eqlist.json()['md5']
         etype = ""
-        if eqlist.json()['No1']['type'] == "reviewed":
+        if eqlist.json()['No0']['type'] == "reviewed":
             etype = "正式测定"
         else:
             etype = "自动测定"
 
-        tlength = length(float(eqlist.json()['No1']['latitude']), float(eqlist.json()['No1']['longitude'])) #距离
+        tlength = length(float(eqlist.json()['No0']['latitude']), float(eqlist.json()['No0']['longitude'])) #距离
 
-        localmagnitude = 0.92 + 1.63 * float(eqlist.json()['No1']['magnitude']) - 3.49 * math.log10(tlength) #本地烈度
+        localmagnitude = 0.92 + 1.63 * float(eqlist.json()['No0']['magnitude']) - 3.49 * math.log10(tlength) #本地烈度
         if localmagnitude <= 0:
             localmagnitude = 0.0
         elif localmagnitude < 12:
@@ -45,7 +45,7 @@ def cenc():
             localmagnitude = 12.0
 
 
-        cencinfo = [eqlist.json()['No1']['location'], eqlist.json()['No1']['magnitude'], str(int(tlength)), str(localmagnitude), etype, eqlist.json()['No1']['time']]
+        cencinfo = [eqlist.json()['No0']['location'], eqlist.json()['No0']['magnitude'], str(int(tlength)), str(localmagnitude), etype, eqlist.json()['No0']['time']]
         return cencinfo
     
 # 预警模块，使用wolfx公开API

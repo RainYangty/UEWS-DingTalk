@@ -1,0 +1,11 @@
+{
+    "token": "",
+    "secret": "",
+    "latitude": 31.75803,
+    "longitude": 117.253804,
+    "at_mobiles": "",
+    "CENC_warning_system": true,
+    "SC_early_warning_system": true,
+    "customize_API": false,
+    "warning_localintensity_min": 3.0
+}

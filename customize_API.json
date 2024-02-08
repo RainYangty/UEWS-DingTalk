@@ -1,0 +1,12 @@
+{
+    "customize_API": "https://api.wolfx.jp/cenc_eqlist.json",
+    "md5": "md5",
+    "warning_type": "type",
+    "first": "No1",
+    "reviewed": "reviewed",
+    "latitude": "latitude",
+    "longitude": "longitude",
+    "magnitude": "magnitude",
+    "location": "location",
+    "OriginTime": "OriginTime"
+}
