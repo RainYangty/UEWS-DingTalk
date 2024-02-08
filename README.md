@@ -10,7 +10,7 @@
 - 苹果系统理论上可以及时推送(操作方法见 [timeliness.md](timeliness.md))
 - 可配置开启自启动(树莓派见[raspberryrun.md](raspberryrun.md))
 - 可配置Homeassistant传感器([HA_UDTW.md](homeassistant/HA_UDTW.md))
-- 可添加自定义API(仅支持含有特殊校验法用来检测内容变化的API)(cunstomize.md)
+- 可添加自定义API(仅支持含有特殊校验法用来检测内容变化的API)[cunstomize.md](cunstomize.md)
 
 ## 免责申明
 
