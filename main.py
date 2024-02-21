@@ -18,43 +18,12 @@ warning_localintensity_min = config["warning_localintensity_min"]
 lastmd5 = 0
 robot.send_text(msg = str(datetime.datetime.now()) + "地震预警已启动")
 
+
+
 # 距离计算模块
 def length(seita, fai): #seita:纬度 fai:经度        
     distance = geodesic((location[0], location[1]), (seita, fai)).km
     return distance
-
-# #倒计时模块
-def countdown(arrivetime, pos, localintensity, startarrti):
-    time.sleep(1)
-    arrivetime -= 1
-    if localintensity < 5.0 and startarrti - arrivetime >= 4:
-        if arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
-            print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
-            robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localintensity) + ")后抵达")
-        if arrivetime <= 10 and arrivetime > 0:
-            print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
-            robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localintensity) + ")后抵达", at_mobiles = at_mobiles)
-        elif arrivetime == 0:
-            print(str(datetime.datetime.now()) + "抵达")
-            robot.send_text(msg = "已 (" + pos + " " + str(localintensity) + ")抵达", at_mobiles = at_mobiles)
-        elif arrivetime < 0:
-            ewarn = False
-            return
-    elif localintensity >= 5.0 and startarrti - arrivetime >= 13:
-        if arrivetime % 10 == 0 and arrivetime <= 60 and arrivetime > 10:
-            print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
-            robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localintensity) + ")后抵达")
-        if arrivetime <= 10 and arrivetime > 0:
-            print(str(datetime.datetime.now()) + " " + str(arrivetime) + "s 后抵达")
-            robot.send_text(msg = str(arrivetime) + "s (" + pos + " " + str(localintensity) + ")后抵达", at_mobiles = at_mobiles)
-        elif arrivetime == 0:
-            print(str(datetime.datetime.now()) + "抵达")
-            robot.send_text(msg = "已 (" + pos + " " + str(localintensity) + ")抵达", at_mobiles = at_mobiles)
-        elif arrivetime < 0:
-            ewarn = False
-            return
-    countdown(arrivetime = arrivetime, pos = pos, localintensity = localintensity, startarrti=startarrti)
-    return
 
 #速报模块，使用中国地震台网信息
 def cenc():
@@ -134,10 +103,6 @@ def sc_eew():
             
             if arrivetime > 0:
                 arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
-                if localintensity >= warning_localintensity_min:
-                    print(print(str(datetime.datetime.now()) + "本地烈度超过阈值，启动倒计时"))
-                    count = Thread(target=countdown, args = (int(arrivetime), eewwarn.json()['HypoCenter'], localintensity, int(arrivetime)))    #启动新线程倒计时
-                    count.start()
                 msg = eewwarn.json()['HypoCenter'] + "(" + str(eewwarn.json()['Latitude']) + ", " + str(eewwarn.json()['Longitude']) + ")于" + eewwarn.json()['OriginTime'] + "发生" + str(eewwarn.json()['Magunitude']) + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地烈度" + str(localintensity) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
             else:
                 msg = eewwarn.json()['HypoCenter'] + "(" + str(eewwarn.json()['Latitude']) + ", " + str(eewwarn.json()['Longitude']) + ")于" + eewwarn.json()['OriginTime'] + "发生" + str(eewwarn.json()['Magunitude']) + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地烈度" + str(localintensity) + "级 " + "    已抵达(S波) "
@@ -182,11 +147,12 @@ def customize_API():
 
 eqli = Thread(target = cenc)
 eewwa = Thread(target = sc_eew)
-customize = Thread(target = customize_API)
+
 
 if config["CENC_warning_system"]:
     eqli.start()
 if config["SC_early_warning_system"]:
     eewwa.start()
 if config["customize_API"]:
+    customize = Thread(target = customize_API)
     customize.start()
