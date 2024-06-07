@@ -5,7 +5,7 @@
 ```
 chmod 777  main.py
 ```
-2)添加服务,保存脚本为/etc/init.d/UDTW文件(请修改```nohup python3 ```后的地址，使之指向main.py)
+2)添加服务,保存脚本为/etc/init.d/UEWS文件(请修改```nohup python3 ```后的地址，使之指向main.py)
 ```
 #!/bin/bash
 ### BEGIN INIT INFO
@@ -34,5 +34,5 @@ exit 0
 ```
 4)设置为开机启动项(若提示失败请刷新配置 ```systemctl daemon-reload``` )
 ```
-sudo update-rc.d UDTW defaults
+sudo update-rc.d UEWS defaults
 ```
