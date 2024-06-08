@@ -52,17 +52,20 @@ at_mobiles: "手机号"
 "longitude": 117.253804
 ```
 
-注: 若要对UEWS-Delay进行播报，请依据情况修改
+3.最后运行
+```
+python main.py
+```
+
+## 本地模拟
+当本地运行惹[UEWS-Delay](https://github.com/RainYangty/UEWS-Delay) Web端后，可以转发本地发出的模拟信息
+
+注: 若要对UEWS-Delay进行转发播报，请依据情况修改 `config.py` 中
 ```
 "Delay_warning_system": true,
 "Delay_warning_api": "http://127.0.0.1/static/sc_eew.json"
 ```
 这部分字段
-
-3.最后运行
-```
-python main.py
-```
 
 ## 协议
 本仓库代码依据MIT License协议开源
