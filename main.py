@@ -18,8 +18,6 @@ warning_localintensity_min = config["warning_localintensity_min"]
 lastmd5 = 0
 robot.send_text(msg = str(datetime.datetime.now()) + "地震预警已启动")
 
-
-
 # 距离计算模块
 def length(seita, fai): #seita:纬度 fai:经度        
     distance = geodesic((location[0], location[1]), (seita, fai)).km
@@ -145,14 +143,71 @@ def customize_API():
         time.sleep(1)
 
 
+def delay_eew():    #是和UEWS-Delay一起食用的捏
+    global config
+    eewlastid = 0
+    err = False
+    while True:
+        ctime = int(time.time() * 1000)
+        errtime = datetime.datetime.now()   #避免因网络错误产生高延迟 导致反馈错误的时间不准
+        # print("get json")
+        try:
+            eewwarn = requests.get(url=config["Delay_warning_api"])   #设置等待时间，若无响应则网络出现问题：默认是http://127.0.0.1/static/sc_eew.json
+        except:
+            time.sleep(1)
+            continue
+
+        #eew预警
+        if eewwarn.json()['EventID'] != eewlastid:
+            eewlastid = eewwarn.json()['EventID']
+            #计算与震源距离（单位km）
+            print(str(datetime.datetime.now()) + eewwarn.json()['HypoCenter'] + " 发生地震(地震模拟) 第" + str(eewwarn.json()['ReportNum']) + "报")
+            tlength = length(float(eewwarn.json()['Latitude']), float(eewwarn.json()['Longitude']))
+            print(str(datetime.datetime.now()) + "距离: " + str(int(tlength)) + " km")
+
+            #修正时间，按横波（取4km/s）抵达时间计算
+            timeArray = time.strptime(eewwarn.json()['OriginTime'], "%Y-%m-%d %H:%M:%S")
+            timeStamp = time.mktime(timeArray)
+            arrivetime = tlength / 4 - int(time.time() - timeStamp)
+
+            if arrivetime > 0:
+                print(str(datetime.datetime.now()) + " " + str(int(arrivetime)) + "s 后抵达(S波)")
+            else:
+                print(str(datetime.datetime.now()) + " " + str(int(0 - arrivetime)) + "s 前已抵达(S波)")
+
+            #计算本地烈度
+            localintensity = 0.92 + 1.63 * float(eewwarn.json()['Magunitude']) - 3.49 * math.log10(tlength)
+            if localintensity <= 0:
+                localintensity = 0.0
+            elif localintensity < 12:
+                localintensity = int(localintensity * 10) / 10.0    #保留1位小数
+            elif localintensity >= 12:
+                localintensity = 12.0
+            print(str(datetime.datetime.now()) + "本地烈度为" + str(localintensity) + "级")
+            
+            if arrivetime > 0:
+                arrivetime = tlength / 4 - int(time.time() - timeStamp)     #修正因发送前文导致的时间延时
+                msg = eewwarn.json()['HypoCenter'] + "(" + str(eewwarn.json()['Latitude']) + ", " + str(eewwarn.json()['Longitude']) + ")于" + eewwarn.json()['OriginTime'] + "发生" + str(eewwarn.json()['Magunitude']) + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地烈度" + str(localintensity) + "级 " + "    预计抵达时间(S波)" + str(int(arrivetime)) + "s"
+            else:
+                msg = eewwarn.json()['HypoCenter'] + "(" + str(eewwarn.json()['Latitude']) + ", " + str(eewwarn.json()['Longitude']) + ")于" + eewwarn.json()['OriginTime'] + "发生" + str(eewwarn.json()['Magunitude']) + "级地震, " + "距离震中" + str(int(tlength)) + "km" + "   估计本地烈度" + str(localintensity) + "级 " + "    已抵达(S波) "
+            robot.send_text(msg = msg, at_mobiles = at_mobiles)
+            print(str(datetime.datetime.now()) + "发送成功")
+
+        time.sleep(1)
+
+
+
 eqli = Thread(target = cenc)
 eewwa = Thread(target = sc_eew)
+dewa = Thread(target = delay_eew)
 
 
 if config["CENC_warning_system"]:
     eqli.start()
 if config["SC_early_warning_system"]:
     eewwa.start()
+if config["Delay_warning_system"]:
+    dewa.start()
 if config["customize_API"]:
     customize = Thread(target = customize_API)
     customize.start()
