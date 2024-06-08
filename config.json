@@ -6,6 +6,8 @@
     "at_mobiles": "",
     "CENC_warning_system": true,
     "SC_early_warning_system": true,
+    "Delay_warning_system": false,
+    "Delay_warning_api": "http://127.0.0.1/static/sc_eew.json",
     "customize_API": false,
     "warning_localintensity_min": 3.0
 }
