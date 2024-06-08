@@ -11,6 +11,7 @@
 - 可配置开启自启动(树莓派见[raspberryrun.md](raspberryrun.md))
 - 可配置Homeassistant传感器([HA_UEWS.md](homeassistant/HA_UEWS.md))
 - 可添加自定义API(仅支持含有特殊校验法用来检测内容变化的API)[cunstomize.md](cunstomize.md)
+- 支持惹[UEWS-Delay](https://github.com/RainYangty/UEWS-Delay)
 
 ## 免责申明
 
@@ -51,7 +52,14 @@ at_mobiles: "手机号"
 "longitude": 117.253804
 ```
 
-4）最后运行
+注: 若要对UEWS-Delay进行播报，请依据情况修改
+```
+"Delay_warning_system": true,
+"Delay_warning_api": "http://127.0.0.1/static/sc_eew.json"
+```
+这部分字段
+
+3.最后运行
 ```
 python main.py
 ```
